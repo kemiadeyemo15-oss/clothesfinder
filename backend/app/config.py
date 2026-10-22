@@ -22,7 +22,6 @@ class Settings(BaseSettings):
     inventory: Literal["seed", "shopping_api"] = "seed"
     query_parser: Literal["rules", "llm"] = "rules"
     tagger: Literal["rules", "vlm"] = "rules"   # vlm = visual scan of each product
-    tagger: Literal["title", "vlm"] = "title"   # vlm = scan product images at ingest
 
     # --- Postgres (only read when repo_backend=postgres) ---
     database_url: str = "postgresql+asyncpg://clothesfinder:clothesfinder@localhost:5432/clothesfinder"
@@ -32,13 +31,8 @@ class Settings(BaseSettings):
     lykdat_base_url: str = "https://api.lykdat.com/v1"
     shopping_api_key: str = ""
     shopping_api_url: str = ""          # e.g. a SerpApi-compatible endpoint
-    llm_api_key: str = ""
-    llm_model: str = "claude-3-5-haiku"
-
-    # --- vision tagging (only read when tagger=vlm) ---
-    vision_api_key: str = ""
-    vision_base_url: str = "https://api.anthropic.com/v1/messages"
-    vision_model: str = "claude-3-5-sonnet-latest"  # confirm current vision model
+    llm_api_key: str = ""               # Anthropic key; read when tagger=vlm or query_parser=llm
+    llm_model: str = "claude-3-5-haiku-latest"
 
     embedding_dim: int = 512            # must match the model you wire in
 
