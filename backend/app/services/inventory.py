@@ -60,20 +60,29 @@ class ShoppingApiInventory:
             resp.raise_for_status()
             data = resp.json()
 
+        # Tag each product's attributes from its title using the same rule
+        # parser the query box uses, so the (stub) embedder has something to
+        # match against. Real embeddings (Lykdat/CLIP) supersede this later.
+        from .query import _parse_text_rules
+
         products: list[Product] = []
-        for item in data.get("shopping_results", []):  # TODO: match provider shape
+        for item in data.get("shopping_results", []):  # SerpApi google_shopping shape
             retailer = (item.get("source") or "").strip()
             if not self.allowlist.is_trusted(retailer):
                 continue  # junk/untrusted excluded by construction
+            title = item.get("title", "")
+            tags = _parse_text_rules(title)
             products.append(
                 Product(
                     id=str(item.get("product_id") or item.get("position")),
-                    title=item.get("title", ""),
+                    title=title,
                     retailer=retailer,
-                    category="",            # enrich via tagging model later
-                    colours=[], materials=[], silhouettes=[],
+                    category=tags.category or "",
+                    colours=tags.colours,
+                    materials=tags.materials,
+                    silhouettes=tags.silhouettes,
                     price=float(item.get("extracted_price") or 0.0),
-                    url=item.get("link", "unknown"),
+                    url=item.get("product_link") or item.get("link") or "unknown",
                     image=item.get("thumbnail", "unknown"),
                 )
             )
