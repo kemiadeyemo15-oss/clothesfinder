@@ -11,12 +11,14 @@ implementations yield normalised `Product`s so ingest downstream is identical.
 """
 from __future__ import annotations
 
+import asyncio
 import json
 from pathlib import Path
 from typing import Protocol, TYPE_CHECKING
 
 from ..core.allowlist import Allowlist
 from ..domain import Product
+from .tagger import Tagger, RulesTagger
 
 if TYPE_CHECKING:
     from ..config import Settings
@@ -44,10 +46,14 @@ class SeedInventory:
 
 
 class ShoppingApiInventory:
-    def __init__(self, settings: "Settings", allowlist: Allowlist):
+    def __init__(self, settings: "Settings", allowlist: Allowlist, tagger: Tagger | None = None):
         self.url = settings.shopping_api_url
         self.key = settings.shopping_api_key
         self.allowlist = allowlist
+        self.tagger = tagger or RulesTagger()
+        # Bound concurrent tag calls so a visual scan of ~60 products doesn't
+        # open 60 simultaneous connections to the vision API.
+        self._sem = asyncio.Semaphore(8)
 
     async def fetch(self, query_terms: list[str]) -> list[Product]:
         import httpx
@@ -60,36 +66,38 @@ class ShoppingApiInventory:
             resp.raise_for_status()
             data = resp.json()
 
-        # Tag each product's attributes from its title using the same rule
-        # parser the query box uses, so the (stub) embedder has something to
-        # match against. Real embeddings (Lykdat/CLIP) supersede this later.
-        from .query import _parse_text_rules
+        raw_items = [
+            item for item in data.get("shopping_results", [])  # SerpApi google_shopping shape
+            if self.allowlist.is_trusted((item.get("source") or "").strip())
+        ]
+        # Tag every trusted product (visual scan when CF_TAGGER=vlm, else the
+        # rule parse). Concurrent + cached inside the tagger.
+        products = await asyncio.gather(*(self._to_product(i) for i in raw_items))
+        return list(products)
 
-        products: list[Product] = []
-        for item in data.get("shopping_results", []):  # SerpApi google_shopping shape
-            retailer = (item.get("source") or "").strip()
-            if not self.allowlist.is_trusted(retailer):
-                continue  # junk/untrusted excluded by construction
-            title = item.get("title", "")
-            tags = _parse_text_rules(title)
-            products.append(
-                Product(
-                    id=str(item.get("product_id") or item.get("position")),
-                    title=title,
-                    retailer=retailer,
-                    category=tags.category or "",
-                    colours=tags.colours,
-                    materials=tags.materials,
-                    silhouettes=tags.silhouettes,
-                    price=float(item.get("extracted_price") or 0.0),
-                    url=item.get("product_link") or item.get("link") or "unknown",
-                    image=item.get("thumbnail", "unknown"),
-                )
+    async def _to_product(self, item: dict) -> Product:
+        title = item.get("title", "")
+        pid = str(item.get("product_id") or item.get("position"))
+        image = item.get("thumbnail", "unknown")
+        async with self._sem:
+            tags = await self.tagger.tag(
+                product_id=pid, title=title,
+                description=item.get("snippet", ""), image_url=image,
             )
-        return products
+        return Product(
+            id=pid, title=title,
+            retailer=(item.get("source") or "").strip(),
+            category=tags.category or "",
+            colours=tags.colours, materials=tags.materials, silhouettes=tags.silhouettes,
+            price=float(item.get("extracted_price") or 0.0),
+            url=item.get("product_link") or item.get("link") or "unknown",
+            image=image,
+        )
 
 
-def build_inventory(settings: "Settings", allowlist: Allowlist) -> InventoryProvider:
+def build_inventory(
+    settings: "Settings", allowlist: Allowlist, tagger: Tagger | None = None
+) -> InventoryProvider:
     if settings.inventory == "shopping_api":
-        return ShoppingApiInventory(settings, allowlist)
+        return ShoppingApiInventory(settings, allowlist, tagger)
     return SeedInventory(allowlist)

@@ -14,6 +14,7 @@ from .config import get_settings
 from .core.allowlist import get_allowlist
 from .services.embeddings import build_embedder
 from .services.inventory import build_inventory
+from .services.tagging import build_tagger
 
 
 async def main(query: str) -> None:
@@ -21,9 +22,16 @@ async def main(query: str) -> None:
     allowlist = get_allowlist()
     embedder = build_embedder(settings)
     inventory = build_inventory(settings, allowlist)
+    tagger = build_tagger(settings)
 
     products = await inventory.fetch(query.split())
     for p in products:
+        # Scan the product image into vocab attributes (vlm), or title (default).
+        tags = await tagger.tag(p.title, image_url=(p.image if p.image != "unknown" else None))
+        p.category = tags.category or p.category
+        p.colours = tags.colours or p.colours
+        p.materials = tags.materials or p.materials
+        p.silhouettes = tags.silhouettes or p.silhouettes
         p.embedding = await embedder.embed_attributes(p.attributes())
 
     if settings.repo_backend == "postgres":

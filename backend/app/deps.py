@@ -7,6 +7,7 @@ from .config import Settings, get_settings
 from .core.allowlist import get_allowlist
 from .services.embeddings import build_embedder
 from .services.inventory import build_inventory
+from .services.tagger import build_tagger
 from .services.retrieval import LiveRetriever, IndexedRetriever, Retriever
 from .services.search_service import SearchService
 
@@ -18,7 +19,8 @@ async def build_retriever(settings: Settings, allowlist, embedder) -> Retriever:
         repo = PostgresProductRepository(settings)
         await repo.init()
         return IndexedRetriever(repo)
-    inventory = build_inventory(settings, allowlist)
+    tagger = build_tagger(settings)
+    inventory = build_inventory(settings, allowlist, tagger)
     return LiveRetriever(inventory, embedder)
 
 
