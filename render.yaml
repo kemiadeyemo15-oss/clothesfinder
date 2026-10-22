@@ -1,13 +1,12 @@
-# Render blueprint: managed Postgres (with pgvector) + the FastAPI service.
-# Push this repo, point Render at it, set the secrets in the dashboard.
+# Render blueprint — minimal, works on first deploy.
+#
+# Ships the API in in-memory + seed + stub mode: it returns real ranked
+# results immediately, with no database to populate. The Postgres/pgvector
+# path (see infra/docker-compose.yml and the README) is what you move to when
+# you wire real inventory + embeddings — at that point add a Render Postgres
+# and set CF_REPO_BACKEND=postgres + the keys below.
+#
 # Frontend deploys separately on Vercel (see README).
-databases:
-  - name: clothesfinder-db
-    databaseName: clothesfinder
-    user: clothesfinder
-    plan: free
-    postgresMajorVersion: "16"
-
 services:
   - type: web
     name: clothesfinder-api
@@ -15,25 +14,22 @@ services:
     rootDir: backend
     plan: free
     healthCheckPath: /health
-    preDeployCommand: alembic upgrade head
     envVars:
       - key: CF_ENV
         value: prod
       - key: CF_REPO_BACKEND
-        value: postgres
-      - key: CF_DATABASE_URL
-        fromDatabase:
-          name: clothesfinder-db
-          property: connectionString
+        value: memory          # flip to "postgres" once you add a DB + ingest
       - key: CF_EMBEDDER
-        value: stub          # set to "lykdat" once CF_LYKDAT_API_KEY is in
+        value: stub            # flip to "lykdat" once CF_LYKDAT_API_KEY is set
       - key: CF_INVENTORY
-        value: seed          # set to "shopping_api" with key + url
+        value: seed            # flip to "shopping_api" with key + url
+      - key: CF_QUERY_PARSER
+        value: rules           # flip to "llm" with CF_LLM_API_KEY
       - key: CF_LYKDAT_API_KEY
-        sync: false
+        sync: false            # set in dashboard when going real
       - key: CF_SHOPPING_API_KEY
         sync: false
       - key: CF_SHOPPING_API_URL
         sync: false
       - key: CF_CORS_ORIGINS
-        sync: false          # e.g. ["https://clothesfinder.vercel.app"]
+        sync: false            # set to ["https://<your>.vercel.app"] after Vercel
