@@ -1,0 +1,27 @@
+{
+  "_comment": "Seed inventory standing in for the shopping-search provider. URLs left 'unknown' deliberately — a real provider fills url/image. Attributes hand-tagged for the dev experience.",
+  "products": [
+    {"id": "p001", "title": "Oversized belted wool coat", "retailer": "COS", "category": "coat", "colours": ["cream"], "materials": ["wool"], "silhouettes": ["oversized", "belted", "longline"], "price": 190},
+    {"id": "p002", "title": "Double-breasted wool coat", "retailer": "Arket", "category": "coat", "colours": ["camel"], "materials": ["wool"], "silhouettes": ["tailored", "double-breasted"], "price": 210},
+    {"id": "p003", "title": "Collarless wool-blend coat", "retailer": "Mango", "category": "coat", "colours": ["cream", "beige"], "materials": ["wool"], "silhouettes": ["collarless", "longline", "relaxed"], "price": 120},
+    {"id": "p004", "title": "Relaxed wool overcoat", "retailer": "Me+Em", "category": "coat", "colours": ["grey"], "materials": ["wool"], "silhouettes": ["relaxed", "longline"], "price": 350},
+    {"id": "p005", "title": "Cropped denim jacket", "retailer": "& Other Stories", "category": "jacket", "colours": ["blue"], "materials": ["denim"], "silhouettes": ["cropped", "fitted"], "price": 85},
+    {"id": "p006", "title": "Oversized leather jacket", "retailer": "Reformation", "category": "jacket", "colours": ["black"], "materials": ["leather"], "silhouettes": ["oversized", "relaxed"], "price": 450},
+    {"id": "p007", "title": "Tailored linen blazer", "retailer": "Mango", "category": "blazer", "colours": ["beige"], "materials": ["linen"], "silhouettes": ["tailored", "relaxed"], "price": 100},
+    {"id": "p008", "title": "Double-breasted blazer", "retailer": "Aritzia", "category": "blazer", "colours": ["navy"], "materials": ["wool"], "silhouettes": ["tailored", "double-breasted", "oversized"], "price": 170},
+    {"id": "p009", "title": "Chunky cashmere jumper", "retailer": "COS", "category": "jumper", "colours": ["cream"], "materials": ["cashmere", "knit"], "silhouettes": ["oversized", "relaxed"], "price": 135},
+    {"id": "p010", "title": "Merino crew-neck knit", "retailer": "Uniqlo", "category": "knit", "colours": ["grey"], "materials": ["wool", "knit"], "silhouettes": ["fitted", "slim"], "price": 35},
+    {"id": "p011", "title": "Cropped ribbed cardigan", "retailer": "& Other Stories", "category": "cardigan", "colours": ["cream"], "materials": ["knit", "cotton"], "silhouettes": ["cropped", "fitted"], "price": 55},
+    {"id": "p012", "title": "Silk slip midi dress", "retailer": "Reformation", "category": "dress", "colours": ["burgundy"], "materials": ["silk", "satin"], "silhouettes": ["slim", "midi"], "price": 220},
+    {"id": "p013", "title": "A-line linen midi dress", "retailer": "Toast", "category": "dress", "colours": ["olive"], "materials": ["linen"], "silhouettes": ["a-line", "midi", "relaxed"], "price": 165},
+    {"id": "p014", "title": "Belted shirt dress", "retailer": "Sezane", "category": "dress", "colours": ["navy"], "materials": ["cotton"], "silhouettes": ["belted", "midi"], "price": 115},
+    {"id": "p015", "title": "Wide-leg wool trousers", "retailer": "COS", "category": "trousers", "colours": ["black"], "materials": ["wool"], "silhouettes": ["wide-leg", "high-waisted", "tailored"], "price": 89},
+    {"id": "p016", "title": "High-waisted straight jeans", "retailer": "Arket", "category": "jeans", "colours": ["blue"], "materials": ["denim"], "silhouettes": ["straight", "high-waisted"], "price": 77},
+    {"id": "p017", "title": "Pleated midi skirt", "retailer": "& Other Stories", "category": "skirt", "colours": ["camel"], "materials": ["satin"], "silhouettes": ["a-line", "midi", "high-waisted"], "price": 69},
+    {"id": "p018", "title": "Corduroy wide-leg trousers", "retailer": "Toast", "category": "trousers", "colours": ["brown", "tan"], "materials": ["corduroy", "cotton"], "silhouettes": ["wide-leg", "relaxed"], "price": 110},
+    {"id": "p019", "title": "Leather Chelsea boots", "retailer": "John Lewis", "category": "boots", "colours": ["black"], "materials": ["leather"], "silhouettes": ["fitted"], "price": 99},
+    {"id": "p020", "title": "Suede ankle boots", "retailer": "Everlane", "category": "boots", "colours": ["tan", "brown"], "materials": ["suede"], "silhouettes": ["fitted"], "price": 150},
+    {"id": "p021", "title": "Oversized cotton shirt", "retailer": "Uniqlo", "category": "shirt", "colours": ["white"], "materials": ["cotton"], "silhouettes": ["oversized", "relaxed"], "price": 30},
+    {"id": "p022", "title": "Longline camel teddy coat", "retailer": "Mango", "category": "coat", "colours": ["camel", "tan"], "materials": ["wool"], "silhouettes": ["longline", "oversized", "relaxed"], "price": 130}
+  ]
+}

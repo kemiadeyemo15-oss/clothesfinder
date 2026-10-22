@@ -1,0 +1,20 @@
+{
+  "_comment": "The product's moat: curation. Trusted retailers are scored; everything on 'deny' is excluded by construction. 'ship_days' is a maintained UK delivery estimate you verify from each retailer's own stated delivery info — never invented, never a promise.",
+  "allow": {
+    "COS":            {"ship_days": 4, "region": "UK"},
+    "Arket":          {"ship_days": 4, "region": "UK"},
+    "& Other Stories":{"ship_days": 4, "region": "UK"},
+    "Uniqlo":         {"ship_days": 3, "region": "UK"},
+    "Everlane":       {"ship_days": 7, "region": "US-ships-UK"},
+    "Reformation":    {"ship_days": 7, "region": "US-ships-UK"},
+    "Sezane":         {"ship_days": 5, "region": "EU-ships-UK"},
+    "Aritzia":        {"ship_days": 6, "region": "ships-UK"},
+    "Mango":          {"ship_days": 4, "region": "UK"},
+    "John Lewis":     {"ship_days": 2, "region": "UK"},
+    "Toast":          {"ship_days": 3, "region": "UK"},
+    "Me+Em":          {"ship_days": 3, "region": "UK"}
+  },
+  "deny": [
+    "SHEIN", "Temu", "AliExpress", "DHgate", "Wish", "Romwe", "Zaful", "Cider"
+  ]
+}

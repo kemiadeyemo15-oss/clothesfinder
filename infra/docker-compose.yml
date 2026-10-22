@@ -1,0 +1,43 @@
+# Local full-stack with Postgres+pgvector. For the zero-dep dev path you don't
+# need this at all — just run the backend with CF_REPO_BACKEND=memory.
+#
+#   docker compose -f infra/docker-compose.yml up --build
+#
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: clothesfinder
+      POSTGRES_PASSWORD: clothesfinder
+      POSTGRES_DB: clothesfinder
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U clothesfinder"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  backend:
+    build: ../backend
+    environment:
+      CF_REPO_BACKEND: postgres
+      CF_DATABASE_URL: postgresql+asyncpg://clothesfinder:clothesfinder@db:5432/clothesfinder
+      CF_EMBEDDER: stub            # flip to lykdat + add CF_LYKDAT_API_KEY
+      CF_INVENTORY: seed           # flip to shopping_api + add key/url
+      CF_ENV: dev
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    # Run migrations, seed the index, then serve.
+    command: >
+      sh -c "alembic upgrade head &&
+             python -m app.ingest 'coat dress trousers' &&
+             uvicorn app.main:app --host 0.0.0.0 --port 8000"
+
+volumes:
+  pgdata:
