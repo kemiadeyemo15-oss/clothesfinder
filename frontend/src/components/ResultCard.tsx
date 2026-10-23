@@ -14,7 +14,7 @@ export function ResultCard({ r, index }: { r: Result; index: number }) {
         {r.product.title} <span className="retailer">· {r.product.retailer}</span>
       </span>
       <span className="ship">~{r.ship_days ?? "—"}d</span>
-      <span className="price">£{Math.round(r.product.price)}</span>
+      <span className="price">{({ GBP: "£", USD: "$", EUR: "€" } as Record<string, string>)[r.product.currency] ?? ""}{Math.round(r.product.price)}</span>
       <span className="score">{r.score.toFixed(2)}</span>
     </>
   );

@@ -7,7 +7,16 @@ from PIL import Image
 
 from app.main import app
 
-client = TestClient(app)
+import pytest
+
+
+@pytest.fixture(scope="module", autouse=True)
+def _client():
+    # `with` runs the app lifespan, which builds app.state.search_service.
+    global client
+    with TestClient(app) as c:
+        client = c
+        yield
 
 
 def test_health():

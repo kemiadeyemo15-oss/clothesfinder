@@ -61,7 +61,12 @@ class ShoppingApiInventory:
         async with httpx.AsyncClient(timeout=15) as client:
             resp = await client.get(
                 self.url,
-                params={"q": q, "engine": "google_shopping", "api_key": self.key},
+                params={
+                    "q": q, "engine": "google_shopping", "api_key": self.key,
+                    # UK locale: UK retailers and GBP prices (SerpApi defaults to US).
+                    "google_domain": "google.co.uk", "gl": "uk", "hl": "en",
+                    "location": "United Kingdom",
+                },
             )
             resp.raise_for_status()
             data = resp.json()
@@ -91,8 +96,20 @@ class ShoppingApiInventory:
             colours=tags.colours, materials=tags.materials, silhouettes=tags.silhouettes,
             price=float(item.get("extracted_price") or 0.0),
             url=item.get("product_link") or item.get("link") or "unknown",
+            currency=_currency(item.get("price") or ""),
             image=image,
         )
+
+
+_SYMBOLS = {"£": "GBP", "$": "USD", "€": "EUR"}
+
+
+def _currency(price_text: str) -> str:
+    """SerpApi gives price as display text, e.g. "£45.00". Read the symbol."""
+    for sym, code in _SYMBOLS.items():
+        if sym in price_text:
+            return code
+    return "GBP"
 
 
 def build_inventory(
